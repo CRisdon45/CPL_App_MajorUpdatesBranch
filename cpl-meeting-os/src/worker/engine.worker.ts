@@ -108,6 +108,16 @@ self.onmessage = (ev: MessageEvent<EngineRequest>) => {
 
     if (msg.type === "compute") {
       const result = computeEstimate(parsed.data, msg.session);
+      // enrich breakdown with timeline + fit suggestions (best-effort)
+      const timeline = computeTimeline(msg.session, parsed.data);
+      const suggestions = computeFitSuggestions(msg.session, result.breakdown.items, {
+        totalLow: result.totalLow,
+        totalHigh: result.totalHigh,
+        monthlyLow: result.monthlyLow,
+        monthlyHigh: result.monthlyHigh
+      });
+      result.breakdown.timeline = timeline;
+      result.breakdown.suggestions = suggestions;
       const res: EngineResponse = { type: "computeResult", result };
       postMessage(res);
       return;

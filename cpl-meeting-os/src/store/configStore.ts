@@ -4,6 +4,22 @@ import { ZPricebook } from "@/engine/schemas";
 
 const LOCAL_KEY = "cpl_meeting_os_pricebook_v1";
 
+function normalizePricebook(pb: Pricebook): Pricebook {
+  const sections = (pb.sections ?? []).map((s, idx) => ({
+    ...s,
+    order: s.order ?? idx
+  }));
+
+  const items = (pb.items ?? []).map((it) => ({
+    ...it,
+    basePrice: it.basePrice ?? it.price ?? 0,
+    defaultSelected: it.defaultSelected ?? it.selectedByDefault ?? false,
+    defaultQty: it.defaultQty ?? 1
+  }));
+
+  return { ...pb, sections, items };
+}
+
 function tryLoadLocal(): Pricebook | null {
   try {
     const raw = localStorage.getItem(LOCAL_KEY);
@@ -11,7 +27,7 @@ function tryLoadLocal(): Pricebook | null {
     const json = JSON.parse(raw);
     const parsed = ZPricebook.safeParse(json);
     if (!parsed.success) return null;
-    return parsed.data;
+    return normalizePricebook(parsed.data);
   } catch {
     return null;
   }
@@ -40,7 +56,7 @@ export const useConfigStore = defineStore("config", {
     importJSON(text: string) {
       const json = JSON.parse(text);
       const parsed = ZPricebook.parse(json);
-      this.pricebook = parsed;
+      this.pricebook = normalizePricebook(parsed);
       this.saveLocal();
     },
 
@@ -66,7 +82,7 @@ export const useConfigStore = defineStore("config", {
         const parsed = ZPricebook.safeParse(json);
         if (!parsed.success) throw new Error("Default pricebook JSON failed schema validation.");
 
-        this.pricebook = parsed.data;
+        this.pricebook = normalizePricebook(parsed.data);
         this.loaded = true;
       } catch (e: any) {
         this.error = e?.message ?? "Config load error";

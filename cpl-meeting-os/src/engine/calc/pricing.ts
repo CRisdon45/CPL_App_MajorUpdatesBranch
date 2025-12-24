@@ -29,7 +29,7 @@ function monthlyFromTotal(total: number, apr: number, termYears: number) {
 
 function getSelected(item: ItemTemplate, session: Session) {
   const st = session.items[item.id] ?? {};
-  return st.selected ?? item.defaultSelected ?? false;
+  return st.selected ?? item.defaultSelected ?? item.selectedByDefault ?? false;
 }
 
 function getQty(item: ItemTemplate, session: Session) {
@@ -99,14 +99,15 @@ for (const it of pricebook.items) {
   for (const item of pricebook.items) {
     if (!getSelected(item, session)) continue;
 
-    let lineTotal = item.basePrice ?? 0;
+    const basePrice = item.basePrice ?? item.price ?? 0;
+    let lineTotal = basePrice;
     const qty = getQty(item, session);
 
     // starter behavior:
     // - each: basePrice
     // - sf/lf/percent/allowance: qty * basePrice (treat basePrice as per-unit for now)
     if (item.unit !== "each") {
-      const pricePer = item.basePrice ?? 0;
+      const pricePer = basePrice;
       lineTotal = qty * pricePer;
     }
 
