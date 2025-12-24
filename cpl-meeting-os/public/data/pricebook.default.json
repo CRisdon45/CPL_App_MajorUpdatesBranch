@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "app": {
+    "companyName": "CALIFORNIA POOLS & LANDSCAPE",
+    "disclaimer": "Estimates are rough order-of-magnitude. Final pricing depends on design, engineering, jurisdiction, access, and material selections.",
+    "nameSuffixTemplates": [
+      "Jr.",
+      "Sr.",
+      "III",
+      "IV"
+    ],
+    "quickAdds": [
+      "spa",
+      "decking",
+      "automation",
+      "heater",
+      "turf",
+      "landscape_allowance"
+    ],
+    "packages": [
+      {
+        "id": "pkg_new_starter",
+        "name": "New Pool Starter",
+        "mode": "new",
+        "apply": [
+          {
+            "itemId": "base_pool",
+            "selected": true
+          },
+          {
+            "itemId": "decking",
+            "selected": true,
+            "qty": 600
+          }
+        ],
+        "notes": "Base pool + starter decking. Add spa/automation as needed."
+      },
+      {
+        "id": "pkg_pool_plus",
+        "name": "Pool + Deck + Automation",
+        "mode": "new",
+        "apply": [
+          {
+            "itemId": "base_pool",
+            "selected": true
+          },
+          {
+            "itemId": "decking",
+            "selected": true,
+            "qty": 800
+          },
+          {
+            "itemId": "automation",
+            "selected": true,
+            "options": {
+              "tier": "pro"
+            }
+          }
+        ]
+      },
+      {
+        "id": "pkg_landscape_starter",
+        "name": "Landscape Starter",
+        "mode": "landscape",
+        "apply": [
+          {
+            "itemId": "turf",
+            "selected": true,
+            "qty": 800
+          },
+          {
+            "itemId": "landscape_allowance",
+            "selected": true,
+            "qty": 1
+          }
+        ]
+      }
+    ],
+    "offices": [
+      {
+        "id": "office_peoria",
+        "name": "CPL Peoria",
+        "address": "Peoria, AZ (set real address in pricebook.default.json)"
+      },
+      {
+        "id": "office_goodyear",
+        "name": "CPL Goodyear",
+        "address": "Goodyear, AZ (set real address in pricebook.default.json)"
+      },
+      {
+        "id": "office_surprise",
+        "name": "CPL Surprise",
+        "address": "Surprise, AZ (set real address in pricebook.default.json)"
+      }
+    ],
+    "warrantySnippets": [
+      {
+        "id": "w_equip",
+        "title": "Equipment coverage",
+        "when": {
+          "anyItems": [
+            "automation",
+            "heater"
+          ]
+        },
+        "bullets": [
+          "Manufacturer warranty applies to equipment components.",
+          "Installed to manufacturer specs to protect coverage."
+        ]
+      },
+      {
+        "id": "w_shell",
+        "title": "Structure confidence",
+        "when": {
+          "anyItems": [
+            "base_pool"
+          ]
+        },
+        "bullets": [
+          "Engineered build sequence and inspections at key milestones.",
+          "Quality control from layout through startup."
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "pool",
+      "name": "Pool",
+      "order": 1
+    },
+    {
+      "id": "equip",
+      "name": "Equipment",
+      "order": 2
+    },
+    {
+      "id": "deck",
+      "name": "Decking/Hardscape",
+      "order": 3
+    },
+    {
+      "id": "shade",
+      "name": "Shade Structures",
+      "order": 4
+    },
+    {
+      "id": "equipment",
+      "name": "Equipment"
+    },
+    {
+      "id": "hardscape",
+      "name": "Hardscape / Decking"
+    },
+    {
+      "id": "landscape",
+      "name": "Landscape"
+    }
+  ],
+  "items": [
+    {
+      "id": "spa",
+      "name": "Spa",
+      "sectionId": "pool",
+      "unit": "each",
+      "basePrice": 18000,
+      "defaultSelected": false,
+      "priorityDefault": "nice",
+      "tags": [
+        "quickadd"
+      ],
+      "requires": [
+        {
+          "itemId": "heater",
+          "policy": "recommended",
+          "reason": "Spa typically needs heat for comfort."
+        }
+      ]
+    },
+    {
+      "id": "heater",
+      "name": "Heater",
+      "sectionId": "equip",
+      "unit": "each",
+      "basePrice": 6000,
+      "defaultSelected": false,
+      "priorityDefault": "optional",
+      "tags": [
+        "dependency"
+      ]
+    },
+    {
+      "id": "salt",
+      "name": "Salt System",
+      "sectionId": "equip",
+      "unit": "each",
+      "basePrice": 2200,
+      "defaultSelected": false,
+      "priorityDefault": "nice",
+      "tags": [
+        "quickadd"
+      ]
+    },
+    {
+      "id": "automation",
+      "name": "Automation",
+      "sectionId": "equip",
+      "unit": "each",
+      "basePrice": 2500,
+      "defaultSelected": false,
+      "priorityDefault": "nice",
+      "tags": [
+        "quickadd"
+      ],
+      "requires": [
+        {
+          "itemId": "valve_actuators",
+          "policy": "recommended",
+          "reason": "Automation often includes valve control."
+        }
+      ],
+      "options": [
+        {
+          "id": "tier",
+          "label": "Tier",
+          "type": "select",
+          "choices": [
+            {
+              "id": "basic",
+              "label": "Basic",
+              "priceDelta": 0
+            },
+            {
+              "id": "pro",
+              "label": "Pro",
+              "priceDelta": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valve_actuators",
+      "name": "Valve Actuators",
+      "sectionId": "equip",
+      "unit": "each",
+      "basePrice": 650,
+      "defaultSelected": false,
+      "priorityDefault": "optional",
+      "tags": [
+        "hidden"
+      ]
+    },
+    {
+      "id": "deck_total",
+      "name": "Decking Total (SF)",
+      "sectionId": "deck",
+      "unit": "sf",
+      "basePrice": 18,
+      "defaultSelected": true,
+      "defaultQty": 600,
+      "priorityDefault": "nice",
+      "tags": [
+        "quickadd",
+        "lever"
+      ],
+      "adjustable": {
+        "kind": "qty",
+        "min": 300,
+        "max": 1500,
+        "step": 50,
+        "weight": 1
+      },
+      "options": [
+        {
+          "id": "material",
+          "label": "Deck Material",
+          "type": "select",
+          "choices": [
+            {
+              "id": "trav",
+              "label": "Travertine",
+              "priceDelta": 0
+            },
+            {
+              "id": "limestone",
+              "label": "Limestone",
+              "priceDelta": 4
+            },
+            {
+              "id": "pavers",
+              "label": "Pavers",
+              "priceDelta": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pergola",
+      "name": "Pergola (Allowance)",
+      "sectionId": "shade",
+      "unit": "allowance",
+      "basePrice": 12000,
+      "defaultSelected": false,
+      "defaultQty": 1,
+      "priorityDefault": "optional",
+      "tags": [
+        "quickadd"
+      ],
+      "options": [
+        {
+          "id": "size",
+          "label": "Size",
+          "type": "select",
+          "choices": [
+            {
+              "id": "small",
+              "label": "Small",
+              "priceDelta": 0
+            },
+            {
+              "id": "med",
+              "label": "Medium",
+              "priceDelta": 3500
+            },
+            {
+              "id": "large",
+              "label": "Large",
+              "priceDelta": 7500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "base_pool",
+      "name": "Pool Base Package",
+      "sectionId": "pool",
+      "unit": "each",
+      "price": 35000,
+      "selectedByDefault": true
+    },
+    {
+      "id": "decking",
+      "name": "Decking Total (SF)",
+      "sectionId": "hardscape",
+      "unit": "sf",
+      "price": 18,
+      "defaultQty": 600
+    },
+    {
+      "id": "turf",
+      "name": "Turf (SF)",
+      "sectionId": "landscape",
+      "unit": "sf",
+      "price": 12,
+      "defaultQty": 800
+    },
+    {
+      "id": "landscape_allowance",
+      "name": "Landscape Allowance",
+      "sectionId": "landscape",
+      "unit": "each",
+      "price": 8000
+    }
+  ],
+  "jurisdictions": [
+    {
+      "id": "peoria",
+      "label": "Peoria",
+      "bullets": [
+        "No 'Future' Gas or Electric can be permitted.",
+        "Water setback: 4' to property line.",
+        "Window setback: 5'."
+      ],
+      "modifiers": {
+        "permit_days_add": 7
+      }
+    },
+    {
+      "id": "surprise",
+      "label": "Surprise",
+      "bullets": [
+        "Typical permit review varies by scope.",
+        "Watch setbacks near easements."
+      ],
+      "modifiers": {
+        "permit_days_add": 3
+      }
+    }
+  ],
+  "poolBaseConfig": {
+    "enabled": true,
+    "basePrice": 34999,
+    "surfaceThreshold": 300,
+    "surfaceOverage": 115,
+    "perimeterThreshold": 80,
+    "perimeterOverage": 285,
+    "depthThreshold": 5,
+    "depthRate": 45,
+    "note": "Est. base package. Depth overage can increase with deeper profiles.",
+    "_backup": null
+  },
+  "timeline": {
+    "templates": [
+      {
+        "id": "t_default",
+        "name": "Default Arizona Timeline",
+        "jurisdictions": [
+          "*"
+        ],
+        "phases": [
+          {
+            "id": "proc",
+            "name": "Processing / Engineering / Permitting",
+            "days": 28
+          },
+          {
+            "id": "pgi",
+            "name": "PGI (Excavation \u2192 Pre\u2011Shotcrete)",
+            "days": 14
+          },
+          {
+            "id": "shot",
+            "name": "Shotcrete & Cure",
+            "days": 10
+          },
+          {
+            "id": "hard",
+            "name": "Hardscape / Decking",
+            "days": 14
+          },
+          {
+            "id": "interior",
+            "name": "Interior Finish",
+            "days": 7
+          },
+          {
+            "id": "land",
+            "name": "Landscape / Final Touches",
+            "days": 10
+          },
+          {
+            "id": "startup",
+            "name": "Startup / Walkthrough",
+            "days": 3
+          }
+        ],
+        "adjustments": [
+          {
+            "when": {
+              "anyItems": [
+                "spa"
+              ]
+            },
+            "phase": "pgi",
+            "deltaDays": 2,
+            "reason": "Spa plumbing/steel adds complexity"
+          },
+          {
+            "when": {
+              "anyItems": [
+                "automation"
+              ]
+            },
+            "phase": "startup",
+            "deltaDays": 1,
+            "reason": "Automation programming & handoff"
+          },
+          {
+            "when": {
+              "anyItems": [
+                "turf"
+              ]
+            },
+            "phase": "land",
+            "deltaDays": 2,
+            "reason": "Turf prep/install"
+          }
+        ]
+      }
+    ]
+  }
+}

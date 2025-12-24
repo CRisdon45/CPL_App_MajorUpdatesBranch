@@ -1,0 +1,17 @@
+:root{
+  --bg: #0b0b0b;
+  --paper: #f4efe6;
+  --ink: #111111;
+  --gold: #b89b5e;
+  --muted: rgba(17,17,17,.62);
+
+  --border: 1px solid rgba(184,155,94,.55);
+  --hairline: 1px solid rgba(184,155,94,.35);
+
+  --radius: 0px; /* angular */
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
+
+  --pad: 14px;
+  --pad-sm: 10px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
