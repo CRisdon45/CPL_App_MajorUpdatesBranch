@@ -25,8 +25,10 @@ export const ZItemTemplate = z.object({
   sectionId: z.string(),
   unit: ZUnit,
   basePrice: z.number().optional(),
+  price: z.number().optional(), // legacy alias
   tags: z.array(z.string()).optional(),
   defaultSelected: z.boolean().optional(),
+  selectedByDefault: z.boolean().optional(), // legacy alias
   defaultQty: z.number().optional(),
   priorityDefault: z.enum(["must","nice","optional","locked"]).optional(),
   options: z.array(ZItemOption).optional(),
@@ -48,7 +50,7 @@ export const ZItemTemplate = z.object({
 export const ZSection = z.object({
   id: z.string(),
   name: z.string(),
-  order: z.number()
+  order: z.number().optional()
 });
 
 export const ZJurisdiction = z.object({
@@ -78,9 +80,56 @@ export const ZPricebook = z.object({
   app: z.object({
     companyName: z.string().optional(),
     disclaimer: z.string().optional(),
-    nameSuffixTemplates: z.array(z.string()).optional()
+    nameSuffixTemplates: z.array(z.string()).optional(),
+    quickAdds: z.array(z.string()).optional(),
+    packages: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      mode: z.enum(["new","remodel","landscape"]).optional(),
+      notes: z.string().optional(),
+      apply: z.array(z.object({
+        itemId: z.string(),
+        selected: z.boolean().optional(),
+        qty: z.number().optional(),
+        options: z.record(z.any()).optional()
+      })).optional()
+    })).optional(),
+    offices: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      address: z.string().optional(),
+      phone: z.string().optional()
+    })).optional(),
+    warrantySnippets: z.array(z.object({
+      id: z.string(),
+      title: z.string(),
+      bullets: z.array(z.string()),
+      when: z.object({
+        anyItems: z.array(z.string()).optional()
+      }).optional()
+    })).optional()
   }).optional(),
   poolBaseConfig: ZPoolBaseConfigNoBackup.extend({
     _backup: ZPoolBaseConfigNoBackup.nullable().optional()
+  }).optional(),
+  timeline: z.object({
+    templates: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      jurisdictions: z.array(z.string()),
+      phases: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        days: z.number()
+      })),
+      adjustments: z.array(z.object({
+        when: z.object({
+          anyItems: z.array(z.string()).optional()
+        }).optional(),
+        phase: z.string(),
+        deltaDays: z.number(),
+        reason: z.string().optional()
+      })).optional()
+    }))
   }).optional()
 });

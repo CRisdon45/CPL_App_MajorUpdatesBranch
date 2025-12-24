@@ -98,19 +98,19 @@
         <div class="row">
           <div>
             <div style="font-weight:700;">{{ it.name }}</div>
-            <div class="small muted">{{ it.unit.toUpperCase() }} • Base {{ money(it.basePrice ?? 0) }}</div>
+            <div class="small muted">{{ it.unit.toUpperCase() }} • Base {{ money(basePrice(it)) }}</div>
             <div v-if="it.tags?.length" class="small muted">Tags: {{ it.tags.join(', ') }}</div>
           </div>
 
           <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end; flex-wrap:wrap;">
-            <button class="btn" :class="{primary: isSel(it.id, it.defaultSelected)}" @click="toggle(it.id, it.defaultSelected)">
-              {{ isSel(it.id, it.defaultSelected) ? "ON" : "OFF" }}
+            <button class="btn" :class="{primary: isSel(it.id, defaultSel(it))}" @click="toggle(it.id, defaultSel(it))">
+              {{ isSel(it.id, defaultSel(it)) ? "ON" : "OFF" }}
             </button>
             <button class="btn" v-if="it.options?.length" @click="open(it.id)">CUSTOMIZE ▾</button>
           </div>
         </div>
 
-        <div v-if="isSel(it.id, it.defaultSelected) && it.unit !== 'each'" style="margin-top:10px;">
+        <div v-if="isSel(it.id, defaultSel(it)) && it.unit !== 'each'" style="margin-top:10px;">
           <div class="small muted">Qty</div>
           <input class="input" type="number" :value="qty(it.id, it.defaultQty)" @input="setQty(it.id, ($event.target as HTMLInputElement).valueAsNumber)" />
         </div>
@@ -243,7 +243,7 @@ const down = computed({
   set: (v) => { s.session.financing.downPayment = Number(v || 0); s.compute(cfg.pricebook); }
 });
 
-const sections = computed(() => (cfg.pricebook?.sections ?? []).slice().sort((a,b) => a.order - b.order));
+const sections = computed(() => (cfg.pricebook?.sections ?? []).slice().sort((a,b) => (a.order ?? 0) - (b.order ?? 0)));
 const items = computed(() => cfg.pricebook?.items ?? []);
 const packages = computed(() => cfg.pricebook?.app?.packages ?? []);
 const quickAddIds = computed(() => cfg.pricebook?.app?.quickAdds ?? []);
@@ -251,6 +251,7 @@ const quickAddItems = computed(() => (cfg.pricebook?.items ?? []).filter((it:any
 
 const selectedPackageId = ref("");
 const packagesForMode = computed(() => packages.value.filter((p:any)=>!p.mode || p.mode === s.session.mode));
+const selectedPackage = computed(() => packagesForMode.value.find(p => p.id === selectedPackageId.value) || null);
 
 const priorityModel = ref<Record<string, "must"|"nice">>({});
 for (const it of (cfg.pricebook?.items ?? [])) {
@@ -258,11 +259,23 @@ for (const it of (cfg.pricebook?.items ?? [])) {
 }
 
 
+function defaultSel(it: any){
+  return it?.defaultSelected ?? it?.selectedByDefault ?? false;
+}
+function basePrice(it: any){
+  return it?.basePrice ?? it?.price ?? 0;
+}
+
 function itemsBySection(sectionId: string){
   const query = q.value.trim().toLowerCase();
   return items.value
     .filter(i => i.sectionId === sectionId)
     .filter(i => !query || i.name.toLowerCase().includes(query) || (i.tags ?? []).some(t => t.toLowerCase().includes(query)));
+}
+
+function applySelectedPackage(){
+  if (!selectedPackage.value || !cfg.pricebook) return;
+  s.applyPackage(selectedPackage.value, cfg.pricebook);
 }
 
 function isSel(id: string, def?: boolean){

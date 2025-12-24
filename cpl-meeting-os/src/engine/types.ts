@@ -2,6 +2,21 @@ export type Mode = "new" | "remodel" | "landscape";
 export type Priority = "must" | "nice" | "optional" | "locked";
 export type Unit = "each" | "sf" | "lf" | "allowance" | "percent";
 
+export interface PackageAction {
+  itemId: string;
+  selected?: boolean;
+  qty?: number;
+  options?: Record<string, any>;
+}
+
+export interface PackageDefinition {
+  id: string;
+  name: string;
+  mode?: Mode;
+  apply?: PackageAction[];
+  notes?: string;
+}
+
 export interface PoolInputs {
   length: number;
   width: number;
@@ -36,9 +51,11 @@ export interface ItemTemplate {
   sectionId: string;
   unit: Unit;
   basePrice?: number;
+  price?: number; // legacy alias used by starter JSON
 
   tags?: string[];
   defaultSelected?: boolean;
+  selectedByDefault?: boolean; // legacy alias used by starter JSON
   defaultQty?: number;
   priorityDefault?: Priority;
 
@@ -54,7 +71,7 @@ export interface ItemTemplate {
   adjustable?: { kind: "qty"; min: number; max: number; step: number; weight?: number };
 }
 
-export interface Section { id: string; name: string; order: number; }
+export interface Section { id: string; name: string; order?: number; }
 
 export interface Jurisdiction {
   id: string;
@@ -62,6 +79,38 @@ export interface Jurisdiction {
   bullets: string[];
   modifiers?: Record<string, number>;
 }
+
+export interface OfficeLocation {
+  id: string;
+  name: string;
+  address?: string;
+  phone?: string;
+}
+
+export interface WarrantySnippet {
+  id: string;
+  title: string;
+  bullets: string[];
+  when?: { anyItems?: string[] };
+}
+
+export interface TimelineAdjustment {
+  when?: { anyItems?: string[] };
+  phase: string;
+  deltaDays: number;
+  reason?: string;
+}
+
+export interface TimelinePhase { id: string; name: string; days: number; }
+export interface TimelineTemplate {
+  id: string;
+  name: string;
+  jurisdictions: string[];
+  phases: TimelinePhase[];
+  adjustments?: TimelineAdjustment[];
+}
+
+export interface TimelineDefinition { templates: TimelineTemplate[]; }
 
 export interface PoolBaseConfig {
   enabled: boolean;
@@ -80,6 +129,10 @@ export interface AppMeta {
   companyName?: string;
   disclaimer?: string;
   nameSuffixTemplates?: string[];
+  quickAdds?: string[];
+  packages?: PackageDefinition[];
+  offices?: OfficeLocation[];
+  warrantySnippets?: WarrantySnippet[];
 }
 
 export interface Pricebook {
@@ -89,6 +142,7 @@ export interface Pricebook {
   jurisdictions: Jurisdiction[];
   app?: AppMeta;
   poolBaseConfig?: PoolBaseConfig;
+  timeline?: TimelineDefinition;
 }
 
 export interface Financing {
@@ -117,7 +171,9 @@ export interface Session {
   visionTags: string[];
   constraintsNotes: string[];
   decisionLog: string[];
-  followUp?: { dateISO: string; locationPresetId: string; notes?: string };
+  followup: { date: string; time: string; officeId: string; notes?: string };
+  budgetTarget: { monthly: number; total: number };
+  priorities: Record<string, Priority>;
 }
 
 export interface ComputeResult {
@@ -129,5 +185,7 @@ export interface ComputeResult {
     poolBase: number;
     items: Array<{ itemId: string; name: string; lineTotal: number; detail?: any }>;
     requirements: Array<{ itemId: string; policy: "required" | "recommended"; reason: string }>;
+    suggestions?: any[];
+    timeline?: any;
   };
 }

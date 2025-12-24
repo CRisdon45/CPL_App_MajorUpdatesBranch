@@ -15,7 +15,7 @@ export const useSessionStore = defineStore("session", {
       pool: { length: 28, width: 12, depthShallow: 3, depthDeep: 5 },
       poolBaseSelected: true,
       budgetTarget: { monthly: 0, total: 0 },
-      priorities: {} as Record<string, "must" | "nice">,
+      priorities: {} as Record<string, any>,
       followup: { date: "", time: "", officeId: "" },
       items: {},
       visionTags: [],
@@ -54,6 +54,9 @@ export const useSessionStore = defineStore("session", {
       }
       if (typeof raw.poolBaseSelected === "boolean") s.poolBaseSelected = raw.poolBaseSelected;
       if (raw.items && typeof raw.items === "object") s.items = raw.items;
+      if (raw.followup && typeof raw.followup === "object") s.followup = { ...s.followup, ...raw.followup };
+      if (raw.budgetTarget && typeof raw.budgetTarget === "object") s.budgetTarget = { ...s.budgetTarget, ...raw.budgetTarget };
+      if (raw.priorities && typeof raw.priorities === "object") s.priorities = { ...raw.priorities };
       if (Array.isArray(raw.visionTags)) s.visionTags = raw.visionTags;
       if (Array.isArray(raw.constraintsNotes)) s.constraintsNotes = raw.constraintsNotes;
       if (Array.isArray(raw.decisionLog)) s.decisionLog = raw.decisionLog;
@@ -81,22 +84,22 @@ export const useSessionStore = defineStore("session", {
     },
 
     applyPackage(pkg: any, pricebook: any) {
-  if (!pkg) return;
-  if (pkg.mode) this.session.mode = pkg.mode;
-  for (const a of (pkg.apply ?? [])) {
-    const id = a.itemId;
-    if (!id) continue;
-    if (!this.session.items[id]) this.session.items[id] = { selected: false, qty: 0, options: {} } as any;
-    if (typeof a.selected === "boolean") this.session.items[id].selected = a.selected;
-    if (typeof a.qty === "number") this.session.items[id].qty = a.qty;
-    if (a.options && typeof a.options === "object") this.session.items[id].options = { ...(this.session.items[id].options || {}), ...a.options };
-  }
-  // Keep base pool toggle in sync if the package touches it
-  if (typeof pkg.apply?.find?.((x:any)=>x.itemId === "base_pool")?.selected === "boolean") {
-    this.session.poolBaseSelected = !!pkg.apply.find((x:any)=>x.itemId === "base_pool").selected;
-  }
-  this.compute(pricebook);
-},
+      if (!pkg) return;
+      if (pkg.mode) this.session.mode = pkg.mode;
+      for (const a of (pkg.apply ?? [])) {
+        const id = a.itemId;
+        if (!id) continue;
+        if (!this.session.items[id]) this.session.items[id] = { selected: false, qty: 0, options: {} } as any;
+        if (typeof a.selected === "boolean") this.session.items[id].selected = a.selected;
+        if (typeof a.qty === "number") this.session.items[id].qty = a.qty;
+        if (a.options && typeof a.options === "object") this.session.items[id].options = { ...(this.session.items[id].options || {}), ...a.options };
+      }
+      // Keep base pool toggle in sync if the package touches it
+      if (typeof pkg.apply?.find?.((x:any)=>x.itemId === "base_pool")?.selected === "boolean") {
+        this.session.poolBaseSelected = !!pkg.apply.find((x:any)=>x.itemId === "base_pool").selected;
+      }
+      this.compute(pricebook);
+    },
 
     compute(pricebook: any) {
       if (!pricebook) return;
@@ -151,6 +154,14 @@ export const useSessionStore = defineStore("session", {
     setItemPriority(id: string, priority: any) {
       const prev = this.session.items[id] ?? {};
       this.session.items[id] = { ...prev, priority };
+    },
+
+    setFollowup<K extends keyof Session["followup"]>(key: K, value: Session["followup"][K]) {
+      this.session.followup = { ...this.session.followup, [key]: value };
+    },
+
+    setBudgetTarget(type: "monthly" | "total", value: number) {
+      this.session.budgetTarget = { ...this.session.budgetTarget, [type]: Number(value || 0) };
     }
   }
 });
